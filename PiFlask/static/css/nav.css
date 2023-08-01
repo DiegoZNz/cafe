@@ -1,0 +1,22 @@
+.navbar {
+    background-color: #3C0C94
+
+
+    ;
+  }
+  
+  /* Estilo para cambiar el color de texto de los enlaces en la barra de navegación */
+  .navbar a {
+    color: #fff; /* Cambia el color del texto a blanco para que sea legible sobre el fondo #6610f2 */
+  }
+  
+  /* Estilo para cambiar el color de fondo del botón en la barra de navegación (si lo hay) */
+  .navbar .btn {
+    background-color: #fff; /* Cambia el fondo del botón a blanco */
+    color: #0C5CCC; /* Cambia el color del texto del botón al color #6610f2 */
+  }
+  
+  /* Estilo para cambiar el color de fondo de la barra de navegación al hacer scroll (si se aplica) */
+  .navbar-scrolled {
+    background-color: #0C5CCC; /* Cambia el color de fondo al hacer scroll */
+  }

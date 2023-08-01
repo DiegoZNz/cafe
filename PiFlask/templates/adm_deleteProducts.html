@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAFEAPP</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <form action="/delete/{{menu[0]}}" method="POST">
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" class="form-control" name="txtNombre" value="{{ menu[1] }}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <select class="form-control" name="txtCategoria" disabled>
+                            {% for categoria in listcategorias %}
+                                {% if categoria[1] == menu[2] %}
+                                    <option value="{{ categoria[0] }}" selected>{{ categoria[1] }}</option>
+                                {% else %}
+                                    <option value="{{ categoria[0] }}">{{ categoria[1] }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion">Descripción</label>
+                        <input type="text" class="form-control" name="txtDescripcion" value="{{ menu[3] }}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="precio">Precio</label>
+                        <input type="number" class="form-control" name="txtPrecio" step="0.01" value="{{ menu[4] }}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="disponibilidad">Disponibilidad</label>
+                        <select class="form-control" name="txtDisponibilidad" disabled>
+                            <option value="Sí" {% if menu[5] == 'Sí' %} selected {% endif %}>Sí</option>
+                            <option value="No" {% if menu[5] == 'No' %} selected {% endif %}>No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" class="form-control" name="txtStock" value="{{ menu[6] }}" disabled>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                        <a href="/productos" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+</body>
+</html>

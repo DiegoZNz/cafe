@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAFEAPP</title>
+</head>
+<body>
+    {% extends 'adm_navbar.html' %}
+    {% block content %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>{{ messages[0] }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="cotn_principal">
+            <div class="cont_centrar">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Categoría</th>
+                                        <th scope="col">Descripción</th>
+                                        <th scope="col">Precio</th>
+                                        <th scope="col">Disponibilidad</th>
+                                        <th scope="col">Stock</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for menu in listMenu %}
+                                        <tr>
+                                            <td>{{ menu[1] }}</td>
+                                            <td>{{ menu[2] }}</td>
+                                            <td>{{ menu[3] }}</td>
+                                            <td>${{ menu[4] }}</td>
+                                            <td>{{ menu[5] }}</td>
+                                            <td>{{ menu[6] }}</td>
+                                            <td>
+                                                <a href="/edit/{{menu[0]}}" class="btn btn-success">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="/edit2/{{menu[0]}}" class="btn btn-danger">
+                                                    <i class="far fa-trash-alt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#agregarProductoModal">Agregar Producto</button>
+        <div class="modal fade" id="agregarProductoModal" tabindex="-1" role="dialog" aria-labelledby="agregarProductoModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="agregarProductoModalLabel">Agregar Producto</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/save" method="POST">
+                            <div class="form-group">
+                                <label for="nombre">Nombre</label>
+                                <input type="text" class="form-control" name="txtNombreProd" placeholder="Ingrese el nombre del producto" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="categoria">Categoría</label>
+                                <div class="input-group">
+                                    <select class="form-control" name="txtCategoriaProd">
+                                        {% for categoria in listcategorias %}
+                                            <option value="{{ categoria[0] }}">{{ categoria[1] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#agregarCategoriaModal">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="descripcion">Descripción</label>
+                                <input type="text" class="form-control" name="txtDescripcionProd" placeholder="Ingrese la descripción del producto" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="precio">Precio</label>
+                                <input type="number" class="form-control" name="txtPrecioProd" step="0.01" placeholder="Ingrese el precio del producto" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="disponibilidad">Disponibilidad</label>
+                                <select class="form-control" name="txtDisponibilidadProd">
+                                    <option value="Sí">Sí</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="stock">Stock</label>
+                                <input type="number" class="form-control" name="txtStockProd" placeholder="Ingrese el stock del producto" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+                <!-- Modal Agregar Categoría -->
+        <div class="modal fade" id="agregarCategoriaModal" tabindex="-1" role="dialog" aria-labelledby="agregarCategoriaModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content bg-light">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar Categoría</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/save_category" method="POST">
+                            <div class="form-group">
+                                <label for="nombreCategoria">Nombre de Categoría</label>
+                                <input type="text" class="form-control" name="txtNombreCategoria" placeholder="Ingrese el nombre de la categoría" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    {% endblock %}
+</body>
+</html>

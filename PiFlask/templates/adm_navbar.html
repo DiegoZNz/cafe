@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='script/main.js') }}"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+
+    <title>Navbar</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-custom navbar-mainbg">
+        <a class="navbar-brand navbar-logo" href="#">Administradores</a>
+        <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars text-white"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <div class="hori-selector"><div class="left"></div><div class="right"></div></div>
+                <li class="nav-item">
+                    <a class="nav-link" href="/productos"><i class="fas fa-tachometer-alt"></i>Productos</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/pedidos"><i class="far fa-address-book"></i>Pedidos</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/agregar-admin"><i class="far fa-clone"></i>Agregar administrador</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/usuarios-penalizados"><i class="far fa-calendar-alt"></i>Usuarios Penalizados</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/cerrar-sesion"><i class="far fa-calendar-alt"></i>Cerrar Sesión</a>
+                  </li>
+                
+            </ul>
+        </div>
+    </nav>
+    
+    {% block content %}
+
+    {% endblock %}
+
+
+
+</body>
+</html>

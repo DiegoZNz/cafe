@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='script/login.js') }}"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+
+    <title>Login</title>
+</head>
+<body>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ messages[0] }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endif %}
+      {% endwith %}
+    <div class="cotn_principal">
+        <div class="cont_centrar">
+        
+          <div class="cont_login">
+        <div class="cont_info_log_sign_up">
+              <div class="col_md_login">
+        <div class="cont_ba_opcitiy">
+                
+                <h2>Iniciar sesión</h2>  
+          <p>Inicia sesión si ya tienes una cuenta, A comprar!</p> 
+          <button class="btn_login" onclick="change_to_login()">Iniciar sesión</button>
+          </div>
+          </div>
+        <div class="col_md_sign_up">
+        <div class="cont_ba_opcitiy">
+          <h2>Registrarte</h2>
+        
+          
+          <p>¡Regístrate ahora y descubre lo fácil y rápido que es!</p>
+          <button class="btn_sign_up" onclick="change_to_sign_up()">Registrarte</button>
+        </div>
+          </div>
+               </div>
+        
+            
+            <div class="cont_back_info">
+               <div class="cont_img_back_grey">
+                <img src="{{ url_for('static', filename='imagenes/kafe.jpg') }}" alt="">
+               </div>
+               
+            </div>
+        <div class="cont_forms" >
+            <div class="cont_img_back_">
+              <img src="{{ url_for('static', filename='imagenes/kafe.jpg') }}" alt="">
+               </div>
+         <div>
+          <form action="/login" method="POST" class="cont_form_login">
+            <a href="#" onclick="hidden_login_and_sign_up()" ><i class="material-icons">&#xE5C4;</i></a>
+            <h2>Iniciar sesión</h2>
+            <input type="number" name="txtMatricula_login" placeholder="Matrícula" required/>
+            <input type="password" name="txtContrasena_login" placeholder="Contraseña" required/>
+            <button type="submit" class="btn_login" onclick="change_to_login()">Iniciar sesión</button>
+          </form>
+          </div>
+          
+          <div >
+            <form action="/guardar" method="POST" class="cont_form_sign_up">
+              <a href="#" onclick="hidden_login_and_sign_up()"><i class="material-icons">&#xE5C4;</i></a>
+              <h2>Registrarte</h2>
+              <input type="text" name="txtNombre_guardar" placeholder="Nombre" required/>
+              <input type="text" name="txtApellidoPaterno_guardar" placeholder="Apellido Paterno" required/>
+              <input type="text" name="txtApellidoMaterno_guardar" placeholder="Apellido Materno" required/>
+              <input type="number" name="txtMatricula_guardar" placeholder="Matrícula" required/>
+              <input type="email" name="txtCorreoElectronico_guardar" placeholder="Correo electrónico" required/>
+              <input type="password" name="txtContrasena_guardar" placeholder="Contraseña" required/>
+              <button type="submit" class="btn_sign_up" onclick="change_to_sign_up()">Registrarte</button>
+            </form>
+             
+        
+          </div>
+        
+            </div>
+            
+          </div>
+         </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
