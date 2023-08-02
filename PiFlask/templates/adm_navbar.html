@@ -1,51 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='script/main.js') }}"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Otros metadatos y etiquetas -->
 
-    <title>Navbar</title>
+  <!---link de bootstrap-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <!--Link de referencia a CSS-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/adminav.css') }}">
+  <!---importacion de fuente -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <title>La Kafe UPQ</title>
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-custom navbar-mainbg">
-        <a class="navbar-brand navbar-logo" href="#">Administradores</a>
-        <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="fas fa-bars text-white"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ml-auto">
-                <div class="hori-selector"><div class="left"></div><div class="right"></div></div>
-                <li class="nav-item">
-                    <a class="nav-link" href="/productos"><i class="fas fa-tachometer-alt"></i>Productos</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/pedidos"><i class="far fa-address-book"></i>Pedidos</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/agregar-admin"><i class="far fa-clone"></i>Agregar administrador</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/usuarios-penalizados"><i class="far fa-calendar-alt"></i>Usuarios Penalizados</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/cerrar-sesion"><i class="far fa-calendar-alt"></i>Cerrar Sesión</a>
-                  </li>
-                
+  <nav class="navbar navbar-expand-lg navbar-indigo">
+    <div class="container-fluid">
+      <a class="navbar-brand text-light" href="#">
+        <img src="{{ url_for('static', filename='imagenes/hamburguesa.gif') }}" alt="Logo" width="40" height="40"class="d-inline-block align-text-top">
+        La Kafe UPQ
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav  text-light">
+          <li class="nav-item">
+            <a class="nav-link disabled text-light " aria-disabled="true"> Panel Administrativo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" href="/productos">Productos</a>
+          </li>
+          <li class="nav-item  ">
+            <a class="nav-link text-light" href="/pedidos">Pedidos</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Gestión de usuarios
+            </a>
+            <ul class="dropdown-menu navbar-indigo  text-light ">
+              <li><a class="dropdown-item text-light" href="/usuarios-penalizados">Usuarios penalizados</a></li>
             </ul>
-        </div>
-    </nav>
-    
-    {% block content %}
+          </li>
+          <li class="nav-item dropdown ">
+            <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Permisos
+            </a>
+            <ul class="dropdown-menu navbar-indigo ">
+              <li><a class="dropdown-item text-light" href="/admin">Administradores</a></li>
+            </ul>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link text-light" href="/cerrar-sesion">Cerrar Sesión</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-    {% endblock %}
+  {% block content %}
 
+  {% endblock %}
 
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
 </body>
+
 </html>

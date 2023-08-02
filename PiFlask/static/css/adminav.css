@@ -1,0 +1,7 @@
+/* static/css/navbar.css */
+.navbar-indigo {
+  background-color: #0C5CCC; /* Color blue600  */
+}
+.navbar-blue500 .navbar-nav .nav-link {
+  color: white; /* Color blanco para el texto de los enlaces */
+}
