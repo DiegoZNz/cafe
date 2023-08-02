@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Otros metadatos y etiquetas -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='imagenes/icon.png') }}" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KAFEAPP</title>
+    <title>FOOD WHEELS</title>
 </head>
 <body>
     {% extends 'usr_navbar.html' %}
@@ -13,14 +15,14 @@
         <div class="cotn_principal">
             <div class="cont_centrar">
                 <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <table class="table table-bordered">
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-10">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Fecha Pedido</th>
-                                        <th scope="col">Total Pedido</th>
-                                        <th scope="col">Estatus Pedido</th>
+                                        <th scope="col">Fecha del pedido</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Estatus del pedido</th>
                                     </tr>
                                 </thead>
                                 <tbody>
