@@ -6,8 +6,8 @@ import bcrypt
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = "mi_clave_secreta"
-connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\BERENICEBARCENAS;DATABASE=cafeteria;UID=twa;PWD=1904"
-#connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ACERDZ\DIEGO;DATABASE=cafeteria;UID=admDiego;PWD=12345"
+#connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\BERENICEBARCENAS;DATABASE=cafeteria;UID=twa;PWD=1904"
+connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ACERDZ\DIEGO;DATABASE=cafeteria;UID=admDiego;PWD=12345"
 
 def connect_to_database():
     try:
@@ -81,15 +81,15 @@ def login():
 
 
     CS = connection.cursor()
-    CS.execute("SELECT id_usuario, matricula, contrasena FROM TbUsuarios WHERE matricula = %s", (_matricula,))
+    CS.execute("SELECT id_usuario, matricula, contrasena FROM TbUsuarios WHERE matricula = ?", (_matricula,))
     account = CS.fetchone()
     
     if account and bcrypt.checkpw(_password.encode(), account[2].encode()):
-        user = User(id=account[0], matricula=account[1], pass_hash=account[2])
+        user = User(id_usuario=account[0], matricula=account[1], contrasena=account[2])
         login_user(user)
 
         cur2 = connection.cursor()
-        cur2.execute('SELECT id_tipo_permiso FROM TbUsuarios INNER JOIN TbRoles ON TbUsuarios.id_tipo_permiso=TbRoles.id_tipo_permiso WHERE TbUsuarios.id=%s', (account[0],))
+        cur2.execute('SELECT u.id_tipo_permiso FROM TbUsuarios u INNER JOIN TbRoles r ON u.id_tipo_permiso=r.id_tipo_permiso WHERE u.id_usuario=?', (account[0],))
         rol = cur2.fetchone()
         rolUser = rol[0]
             
@@ -97,8 +97,11 @@ def login():
         global ID
         PERMISO=rol[0]
         ID=account[0]
+        if PERMISO==1:
+            return render_template('adm_dashboard.html')
+        else:
+            return render_template('usr_menu.html')
 
-        return redirect(url_for('/', rolUser=PERMISO, id=ID))
     else:
         flash('Usuario o Contraseña Incorrectas')
         return render_template('error.html')
