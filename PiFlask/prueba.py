@@ -1,13 +1,18 @@
+###################################### IMPORTACIONES ####################################################
 from flask import Flask, render_template, request, redirect, url_for, session, after_this_request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
 import pyodbc
 from flask import flash
 import bcrypt
+############################# FIN DE LAS IMPORTACIONES #####################################################
 
+
+
+######################################## CONECCION CON SQL ################################################################
 app = Flask(__name__, static_folder='static')
 app.secret_key = "mi_clave_secreta"
-#connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\BERENICEBARCENAS;DATABASE=cafeteria;UID=twa;PWD=1904"
-connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ACERDZ\DIEGO;DATABASE=cafeteria;UID=admDiego;PWD=12345"
+connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\BERENICEBARCENAS;DATABASE=cafeteria;UID=twa;PWD=1904"
+#connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ACERDZ\DIEGO;DATABASE=cafeteria;UID=admDiego;PWD=12345"
 
 def connect_to_database():
     try:
@@ -17,6 +22,7 @@ def connect_to_database():
         print("Error al conectar a la base de datos:", e)
         return None
 
+################################ FIN DE LA CONECCION ####################################################################
 
 ################# REDIRECCIONAR  AL LOGIN EN CASO DE QUE NO TENGA UNA CUENTA EXISTENTE #########################
 
@@ -28,7 +34,7 @@ login_manager.login_message = 'Por favor, inicia sesión para acceder a esta pá
 
 
 
-
+############################### MANEJO DE SECIONES ##############################################################
 class User(UserMixin): ###
     def __init__(self, id_usuario, matricula, contrasena):
         self.id = id_usuario
@@ -43,12 +49,12 @@ class User(UserMixin): ###
 def load_user(user_id):
     connection = connect_to_database()
     cur = connection.cursor()
-    cur.execute('SELECT id_usuario, matricula, contrasena FROM TbUsuarios WHERE id_usuario = %s', (user_id,))
+    cur.execute('SELECT id_usuario, matricula, contrasena FROM TbUsuarios WHERE id_usuario = ?', (user_id,))
     account = cur.fetchone()
     cur.close()
 
     if account:
-        return User(id=account[0], matricula=account[1], pass_hash=account[2])
+        return User(id_usuario=account[0], matricula=account[1], contrasena=account[2])
     return None
 
 PERMISO=0
@@ -69,8 +75,6 @@ def index():
 
 
 
-    
-
 @app.route('/login', methods=['POST'])
 def login():
     connection = connect_to_database()
@@ -79,64 +83,41 @@ def login():
         _matricula = request.form['txtMatricula_login']
         _password = request.form['txtContrasena_login']
 
+        CS = connection.cursor()
+        CS.execute("SELECT id_usuario, matricula, contrasena, id_tipo_permiso FROM TbUsuarios WHERE matricula = ?", (_matricula,))
+        account = CS.fetchone()
 
-    CS = connection.cursor()
-    CS.execute("SELECT id_usuario, matricula, contrasena FROM TbUsuarios WHERE matricula = ?", (_matricula,))
-    account = CS.fetchone()
-    
-    if account and bcrypt.checkpw(_password.encode(), account[2].encode()):
-        user = User(id_usuario=account[0], matricula=account[1], contrasena=account[2])
-        login_user(user)
+        if account and bcrypt.checkpw(_password.encode(), account[2].encode()):
+            user = User(id_usuario=account[0], matricula=account[1], contrasena=account[2])
+            login_user(user)
 
-        cur2 = connection.cursor()
-        cur2.execute('SELECT u.id_tipo_permiso FROM TbUsuarios u INNER JOIN TbRoles r ON u.id_tipo_permiso=r.id_tipo_permiso WHERE u.id_usuario=?', (account[0],))
-        rol = cur2.fetchone()
-        rolUser = rol[0]
-            
-        global PERMISO
-        global ID
-        PERMISO=rol[0]
-        ID=account[0]
-        if PERMISO==1:
-            return render_template('adm_dashboard.html')
+            global PERMISO
+            global ID
+            PERMISO = account[3]
+            ID = account[0]
+
+            if PERMISO == 1:
+                return render_template('adm_dashboard.html')
+            else:
+                return render_template('usr_menu.html')
         else:
-            return render_template('usr_menu.html')
-
+            flash('Usuario o Contraseña Incorrectas')
+            return render_template('error.html')
     else:
-        flash('Usuario o Contraseña Incorrectas')
+        flash('Datos de inicio de sesión incompletos')
         return render_template('error.html')
     
-    
-        
-        
-        
-        
-        
-        
-        
-        
-        
+####################################### FIN DEL MANEJO DE SECIONES ###############################################################
 
-    #if userCount == 0:
-     #   flash(f"El usuario {Vmatricula} NO existe", 'error')
-      #  return redirect('/')
 
-    #CS.execute("SELECT contrasena, id_tipo_permiso FROM tbusuarios #WHERE matricula=?", (Vmatricula,))
-    #result = CS.fetchone()
-    #if result:
-     #   conEncriptada = result[0]
-      #  idTipoPermiso = result[1]
-        
-      #  if bcrypt.checkpw(Vpassword.encode(), conEncriptada.encode()):
-       #     CS.execute("SELECT nombre FROM tbusuarios WHERE matricula=?#", (Vmatricula,))
-        #    nombre = CS.fetchone()[0]
-         #   flash(f'Bienvenido {nombre}!')
-
-           
-
+#####################################  DASHBOARD  #######################################################
 @app.route('/dashboard')
+@login_required
 def dashboard():
     return render_template('adm_dashboard.html')
+
+##################################### FIN  DASHBOARD  #######################################################
+
 
 @app.route('/guardar', methods=['POST'])
 def guardar():
@@ -158,6 +139,7 @@ def guardar():
         flash('El usuario se ha agregado correctamente.')
     return redirect(url_for('index'))
 
+
 def encriptarContrasena(password):
     sal = bcrypt.gensalt()
     conHa = bcrypt.hashpw(password.encode(), sal)
@@ -165,6 +147,7 @@ def encriptarContrasena(password):
 
 
 @app.route('/productos')
+@login_required
 def menu():
     connection = connect_to_database() 
     cursor = connection.cursor()
@@ -207,6 +190,7 @@ def saveCategory():
     return redirect(url_for('menu'))
 
 @app.route('/edit/<id>')
+@login_required
 def edit(id):
     connection = connect_to_database() 
     CS = connection.cursor()
@@ -233,6 +217,7 @@ def update(id):
     return redirect(url_for('menu'))
 
 @app.route('/edit2/<id>')
+@login_required
 def edit2(id):
     connection = connect_to_database() 
     CS = connection.cursor()
@@ -243,6 +228,7 @@ def edit2(id):
     return render_template('adm_deleteProducts.html',menu = Queryedit, listcategorias=QueryCategoriasedit)
 
 @app.route('/delete/<id>', methods=['POST'])
+@login_required
 def delete(id):
     connection = connect_to_database() 
     if request.method == 'POST':
@@ -254,10 +240,12 @@ def delete(id):
 
 
 @app.route('/pedidos')
+@login_required
 def pedidos():
     return render_template('pedidos.html')
 
 @app.route('/agregar-admin')
+@login_required
 def addAdm():
     return render_template('adm_addAdm.html')
 
@@ -287,14 +275,26 @@ def saveAdm():
     return redirect(url_for('addAdm'))
 
 @app.route('/usuarios-penalizados')
+@login_required
 def upena():
     return render_template('adm_Upenalizados.html')
 
-@app.route('/cerrar-sesion')
-def LogO():
-    return render_template('index.html')
+#################################### CERRAR SESION ########################################################
+@app.route('/logout')
+@login_required
+def logout():
+    @after_this_request
+    def add_no_cache(response):
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+
+    logout_user()
+    return redirect(url_for('index'))
+#################################### CERRAR SESION ########################################################
+
 
 @app.route('/usrmenu')
+@login_required
 def userMenu():
     connection = connect_to_database() 
     CS = connection.cursor()
@@ -303,6 +303,7 @@ def userMenu():
     return render_template('usr_menu.html',productos=productos)
 
 @app.route('/usrpedidos')
+@login_required
 def userp():
     return render_template('usr_pedidos.html')
 
