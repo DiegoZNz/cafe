@@ -1,11 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, after_this_request
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
 import pyodbc
 from flask import flash
 import bcrypt
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = "mi_clave_secreta"
-connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ACERDZ\DIEGO;DATABASE=cafeteria;UID=admDiego;PWD=12345"
+connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\BERENICEBARCENAS;DATABASE=cafeteria;UID=twa;PWD=1904"
+#connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ACERDZ\DIEGO;DATABASE=cafeteria;UID=admDiego;PWD=12345"
+
 def connect_to_database():
     try:
         conn = pyodbc.connect(connection_string)
@@ -13,7 +16,45 @@ def connect_to_database():
     except pyodbc.Error as e:
         print("Error al conectar a la base de datos:", e)
         return None
-    
+
+
+################# REDIRECCIONAR  AL LOGIN EN CASO DE QUE NO TENGA UNA CUENTA EXISTENTE #########################
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'index'
+login_manager.login_message = 'Por favor, inicia sesión para acceder a esta página.' 
+
+################# REDIRECCIONAR  AL LOGIN EN CASO DE QUE NO TENGA UNA CUENTA EXISTENTE #########################
+
+
+
+
+class User(UserMixin): ###
+    def __init__(self, id_usuario, matricula, contrasena):
+        self.id = id_usuario
+        self.matricula =matricula
+        self.pass_hash = contrasena
+
+    def get_id(self):
+        return str(self.id)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    connection = connect_to_database()
+    cur = connection.cursor()
+    cur.execute('SELECT id_usuario, matricula, contrasena FROM TbUsuarios WHERE id_usuario = %s', (user_id,))
+    account = cur.fetchone()
+    cur.close()
+
+    if account:
+        return User(id=account[0], matricula=account[1], pass_hash=account[2])
+    return None
+
+PERMISO=0
+ID=0
+
+
 
 @app.route('/')
 def index():
@@ -25,41 +66,74 @@ def index():
             return f"Error al ejecutar la consulta: {str(e)}"
     else:
         return "Error de conexión a la base de datos"
+
+
+
     
 
 @app.route('/login', methods=['POST'])
 def login():
     connection = connect_to_database()
-    Vmatricula = request.form['txtMatricula_login']
-    Vpassword = request.form['txtContrasena_login']
+  
+    if request.method == 'POST' and 'txtMatricula_login' in request.form and 'txtContrasena_login' in request.form:
+        _matricula = request.form['txtMatricula_login']
+        _password = request.form['txtContrasena_login']
+
 
     CS = connection.cursor()
-    CS.execute("SELECT COUNT(*) FROM tbusuarios WHERE matricula=?", (Vmatricula,))
-    userCount = CS.fetchone()[0]
-    if userCount == 0:
-        flash(f"El usuario {Vmatricula} NO existe", 'error')
-        return redirect('/')
+    CS.execute("SELECT id_usuario, matricula, contrasena FROM TbUsuarios WHERE matricula = %s", (_matricula,))
+    account = CS.fetchone()
+    
+    if account and bcrypt.checkpw(_password.encode(), account[2].encode()):
+        user = User(id=account[0], matricula=account[1], pass_hash=account[2])
+        login_user(user)
 
-    CS.execute("SELECT contrasena, id_tipo_permiso FROM tbusuarios WHERE matricula=?", (Vmatricula,))
-    result = CS.fetchone()
-    if result:
-        conEncriptada = result[0]
-        idTipoPermiso = result[1]
-        
-        if bcrypt.checkpw(Vpassword.encode(), conEncriptada.encode()):
-            CS.execute("SELECT nombre FROM tbusuarios WHERE matricula=?", (Vmatricula,))
-            nombre = CS.fetchone()[0]
-            flash(f'Bienvenido {nombre}!')
+        cur2 = connection.cursor()
+        cur2.execute('SELECT id_tipo_permiso FROM TbUsuarios INNER JOIN TbRoles ON TbUsuarios.id_tipo_permiso=TbRoles.id_tipo_permiso WHERE TbUsuarios.id=%s', (account[0],))
+        rol = cur2.fetchone()
+        rolUser = rol[0]
+            
+        global PERMISO
+        global ID
+        PERMISO=rol[0]
+        ID=account[0]
 
-            if idTipoPermiso == 1:
-                return redirect('/productos')  # Ruta del administrador
-            elif idTipoPermiso == 2:
-                return redirect('/usrmenu')  # Ruta del cliente
-        else:
-            flash("Contraseña incorrecta", 'error')
+        return redirect(url_for('/', rolUser=PERMISO, id=ID))
     else:
-        flash("Error al obtener datos del usuario", 'error')
-    return redirect(url_for('index'))
+        flash('Usuario o Contraseña Incorrectas')
+        return render_template('error.html')
+    
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+    #if userCount == 0:
+     #   flash(f"El usuario {Vmatricula} NO existe", 'error')
+      #  return redirect('/')
+
+    #CS.execute("SELECT contrasena, id_tipo_permiso FROM tbusuarios #WHERE matricula=?", (Vmatricula,))
+    #result = CS.fetchone()
+    #if result:
+     #   conEncriptada = result[0]
+      #  idTipoPermiso = result[1]
+        
+      #  if bcrypt.checkpw(Vpassword.encode(), conEncriptada.encode()):
+       #     CS.execute("SELECT nombre FROM tbusuarios WHERE matricula=?#", (Vmatricula,))
+        #    nombre = CS.fetchone()[0]
+         #   flash(f'Bienvenido {nombre}!')
+
+           
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('adm_dashboard.html')
 
 @app.route('/guardar', methods=['POST'])
 def guardar():

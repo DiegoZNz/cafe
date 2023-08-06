@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 from flask import flash
 import bcrypt
+from flask_session import Session
+
+
 
 app = Flask(__name__, static_folder='static')
 app.config['MYSQL_HOST'] = 'localhost'
@@ -11,6 +14,14 @@ app.config['MYSQL_DB'] = 'db_cafeteria'
 mysql = MySQL(app)
 app.secret_key = "mi_clave_secreta"
 
+
+# Configure the app to use Flask-Session
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = False
+Session(app)
+
+
+#################################################### LOGIN ##################################################################
 @app.route('/')
 def index():
     try:
@@ -25,6 +36,16 @@ def index():
     except Exception as e:
         return f"Error de conexión a la base de datos: {str(e)}" 
 
+# Decorador para verificar si el usuario tiene permisos
+def require_permission(id_tipo_permiso):
+    def decorator(view_func):
+        def wrapper(*args, **kwargs):
+            if 'user_id' not in session or 'user_permission' not in session or session['user_permission'] != id_tipo_permiso:
+                return redirect(url_for('error'))
+            return view_func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 @app.route('/login', methods=['POST'])
 def login():
     Vmatricula = request.form['txtMatricula_login']
@@ -37,26 +58,29 @@ def login():
         flash(f"El usuario {Vmatricula} NO existe", 'error')
         return redirect('/')
 
-    CS.execute("SELECT contrasena, id_tipo_permiso FROM tbusuarios WHERE matricula=%s", (Vmatricula,))
+    CS.execute("SELECT contrasena, id_tipo_permiso, nombre FROM tbusuarios WHERE matricula=%s", (Vmatricula,))
     result = CS.fetchone()
     if result:
         conEncriptada = result[0]
         idTipoPermiso = result[1]
-        
+        nombre = result[2]
+
         if bcrypt.checkpw(Vpassword.encode(), conEncriptada.encode()):
-            CS.execute("SELECT nombre FROM tbusuarios WHERE matricula=%s", (Vmatricula,))
-            nombre = CS.fetchone()[0]
+            session['user_id'] = Vmatricula
+            session['user_permission'] = idTipoPermiso
             flash(f'Bienvenido {nombre}!')
 
             if idTipoPermiso == 1:
-                return redirect('/productos')  # Ruta del administrador
+                return redirect('/dashboard')  # Ruta del administrador
             elif idTipoPermiso == 2:
                 return redirect('/usrmenu')  # Ruta del cliente
         else:
             flash("Contraseña incorrecta", 'error')
     else:
         flash("Error al obtener datos del usuario", 'error')
+
     return redirect(url_for('index'))
+
 
 @app.route('/guardar', methods=['POST'])
 def guardar():
@@ -86,6 +110,24 @@ def encriptarContrasena(password):
     sal = bcrypt.gensalt()
     conHa = bcrypt.hashpw(password.encode(), sal)
     return conHa
+
+####################################################  LOGIN  ##################################################################
+####################################################  ERROR  ##################################################################
+
+@app.route('/error')
+def error():
+    # Página de error
+    return render_template('error.html')
+####################################################  ERROR  ##################################################################
+
+####################################################  DASHBOARD ADMIN ##################################################################
+@app.route('/dashboard')
+def dashboard():
+    return render_template('adm_dashboard.html')
+
+####################################################  DASHBOARD ADMIN ##################################################################
+
+####################################################  PRODUCTOS ADMIN ##################################################################
 
 @app.route('/productos')
 def menu():
@@ -171,9 +213,16 @@ def delete(id):
     flash('El producto fue eliminado')
     return redirect(url_for('menu'))
 
+####################################################  PRODUCTOS ADMIN ##################################################################
+
+
 @app.route('/pedidos')
 def pedidos():
     return render_template('pedidos.html')
+
+@app.route('/admin')
+def admin():
+    return render_template('adm_admin.html')
 
 @app.route('/agregar-admin')
 def addAdm():
