@@ -1,0 +1,121 @@
+{% extends 'adm_navbar.html' %}
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div >
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: '{{ messages[0] }}',
+                    position: 'top-end', 
+                    showConfirmButton: false, 
+                    timer: 2500 
+                });
+            </script>
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="card-toolbar d-flex justify-content-end mr-5">
+        <div class="mx-5 pr-5">      
+            <button type="button" class="btn btn-primary font-weight-bolder mt-5 mr-5" data-toggle="modal" data-target="#agregarAdminModal">Nuevo administrador</button>
+        </div>
+    </div>
+    
+
+
+    <div class="cotn_principal">
+        <div class="cont_centrar">
+            <div class="container">
+                <div class="row justify-content-center mt-5">
+                    <div class="col-12">
+                        <table class="table text-center table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Apellido paterno</th>
+                                    <th scope="col">Apellido materno</th>
+                                    <th scope="col">Matricula</th>
+                                    <th scope="col">Correo</th>
+                                    <th scope="col">Tipo de permiso</th>
+                                    <th scope="col"> Estatus </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in listUsuario %}
+                                <tr>
+                                    <td>{{ usuario[0] }}</td>
+                                    <td>{{ usuario[1] }}</td>
+                                    <td>{{ usuario[2] }}</td>
+                                    <td>{{ usuario[3] }}</td>
+                                    <td>{{ usuario[4] }}</td>
+                                    <td>{{ usuario[5] }}</td>
+                                    <td>{{ usuario[6] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="agregarAdminModal" tabindex="-1" role="dialog"
+        aria-labelledby="agregarAdminModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarAdminModalLabel">Agregar administrador</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/save-adm"  method="POST">
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" class="form-control" name="txtnombre"
+                                placeholder="Ingrese el nombre " required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appaterno">Apellido paterno</label>
+                            <input type="text" class="form-control" name="txtappaterno"
+                                placeholder="Ingrese el apellido paterno" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="apmaterno">Apellido materno</label>
+                            <input type="text" class="form-control" name="txtapmaterno"
+                                placeholder="Ingrese el apellido materno" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="matricula">Matricula</label>
+                            <input type="number" class="form-control" name="txtmatricula" step="0.01"
+                                placeholder="Ingrese la matricula" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="correo">Correo</label>
+                            <input type="email" class="form-control" name="txtcorreo" step="0.01"
+                                placeholder="Ingrese el correo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="stock">Contraseña</label>
+                            <input type="contrasena" class="form-control" name="txtcontrasena"
+                                placeholder="Ingrese la contraseña" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--SCRIPTS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {% endblock %}

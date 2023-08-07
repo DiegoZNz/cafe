@@ -76,7 +76,6 @@ def index():
 
 
 @app.route('/login', methods=['POST'])
-@login_required
 def login():
     connection = connect_to_database()
   
@@ -249,10 +248,22 @@ def delete(id):
 def pedidos():
     return render_template('pedidos.html')
 
+
+######################################### AGREGAR ADMINSTRADOR ####################################################################
 @app.route('/agregar-admin')
 @login_required
 def addAdm():
-    return render_template('adm_addAdm.html')
+
+    connection = connect_to_database() 
+    cursor = connection.cursor()
+    cursor.execute("SELECT u.nombre, u.ap, u.am, u.matricula, u.correo, p.permiso, u.estatus FROM TbUsuarios u INNER JOIN TbRoles p ON p.id_tipo_permiso = u.id_tipo_permiso")
+    QueryUsuario = cursor.fetchall()
+    # Convertir el valor numérico del estatus a "Activo" si es igual a 1
+    for usuario in QueryUsuario:
+        if usuario[6] == 1:
+            usuario[6] = "Activo"
+            
+    return render_template('adm_admin.html', listUsuario=QueryUsuario)
 
 @app.route('/save-adm', methods=['POST'])
 @login_required
@@ -279,11 +290,17 @@ def saveAdm():
             connection.commit()
             flash('El admin se ha agregado correctamente.')
     return redirect(url_for('addAdm'))
+#########################################FIN DE  AGREGAR ADMINSTRADOR ####################################################################
+
+############################################# USUARIOS PENALIZADOS ####################################################################
 
 @app.route('/usuarios-penalizados')
 @login_required
 def upena():
     return render_template('adm_Upenalizados.html')
+
+############################################# USUARIOS PENALIZADOS ####################################################################
+
 
 #################################### CERRAR SESION ########################################################
 @app.route('/logout')
@@ -298,6 +315,7 @@ def logout():
     return redirect(url_for('index'))
 #################################### CERRAR SESION ########################################################
 
+############################################# MENU USUARIOS ####################################################################
 
 @app.route('/usrmenu')
 @login_required
@@ -308,11 +326,18 @@ def userMenu():
     productos = CS.fetchall()
     return render_template('usr_menu.html',productos=productos)
 
+############################################# FIN MENU USUARIOS ####################################################################
+
+
 @app.route('/usrpedidos')
 @login_required
 def userp():
     return render_template('usr_pedidos.html')
 
+
+############################################# PUERTO  ####################################################################
+
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
 
+############################################# PUERTO  ####################################################################
