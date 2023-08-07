@@ -343,7 +343,7 @@ def logout():
 def userMenu():
     connection = connect_to_database() 
     CS = connection.cursor()
-    CS.execute("SELECT nombre, descripcion, precio from TbProductos where disponibilidad ='Sí'")
+    CS.execute("SELECT id_prod, nombre, descripcion, precio from TbProductos where disponibilidad ='Sí'")
     productos = CS.fetchall()
     return render_template('usr_menu.html',productos=productos)
 
@@ -364,7 +364,11 @@ def guardar_precio_total():
         connection = connect_to_database() 
         CS = connection.cursor()
 
-        CS.execute('INSERT INTO TbPedidos (fecha_pedido, id_usuario, precio_total) VALUES (GETDATE(), ?, ?)', (2, precio_total))
+        # Utiliza el valor de la variable global ID para obtener el usuario_id del usuario con sesión activa
+        usuario_id = ID
+        print("ID del usuario con sesión activa:", ID)
+
+        CS.execute('INSERT INTO TbPedidos (fecha_pedido, id_usuario, precio_total) VALUES (GETDATE(), ?, ?)', (usuario_id, precio_total))
         connection.commit()
         CS.execute('SELECT SCOPE_IDENTITY() AS UltimoPedidoID')
         ultimo_pedido_id = CS.fetchone()['UltimoPedidoID']
@@ -375,6 +379,10 @@ def guardar_precio_total():
     except Exception as e:
         CS.rollback()
         return jsonify({"error": "Error al guardar el precio total en la base de datos: " + str(e)})
+    
+    
+
+
     
 @app.route('/guardar_detalles_pedido', methods=['POST'])
 def guardar_detalles_pedido():
@@ -391,7 +399,7 @@ def guardar_detalles_pedido():
 
         # Insertar detalles del pedido en la tabla de Detalles de Pedido
         CS.execute("INSERT INTO TbDetallepedidos (id_pedido, id_producto, cantidad, precio_uni) VALUES (?, ?, ?, ?)",
-                    6, id_producto, cantidad, precio)
+                    1, id_producto, cantidad, precio)
 
         print("Detalle insertado:", {'id_producto': id_producto, 'cantidad': cantidad, 'precio': precio})
         
