@@ -5,9 +5,10 @@
         <div class="contenedor-items">
             {% for producto in productos %}
             <div class="item">
-                <span class="titulo-item">{{ producto[0] }}</span>
-                <img src="img/middlesteel.png" alt="" class="img-item">
-                <span class="precio-item">${{ producto[2] }}</span>
+                <span class="id-item">{{ producto[0] }}</span>
+                <span class="titulo-item">{{ producto[1] }}</span>
+                <span class="descripcion-item">{{ producto[2] }}</span> 
+                <span class="precio-item">${{ producto[3] }}</span> 
                 <button class="boton-item">Agregar al Carrito</button>
             </div>
             {% endfor %}
@@ -15,18 +16,18 @@
         <!-- Carrito de Compras -->
         <div class="carrito" id="carrito">
             <div class="header-carrito">
-                <h2> <i class="bi bi-cart-fill"></i> Orden actual</h2>
+                <h2>Tu Carrito</h2>
             </div>
 
             <div class="carrito-items">
             </div>
             <div class="carrito-total">
                 <div class="fila">
-                    <strong>Total</strong>
+                    <strong>Tu Total</strong>
                     <span class="carrito-precio-total">
                     </span>
                 </div>
-                <button class="btn-pagar"> <i class="bi bi-credit-card-fill"></i> Pagar </button>
+                <button class="btn-pagar">Pagar <i class="fa-solid fa-bag-shopping"></i> </button>
             </div>
         </div>
     </section>

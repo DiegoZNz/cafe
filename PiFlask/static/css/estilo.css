@@ -52,6 +52,22 @@ header h1{
     box-shadow: 0 0 10px #666;
     scale: 1.05;
 }
+
+.contenedor .contenedor-items .item .descripcion-item{
+    display: block;
+    text-align: center;
+    font-style: italic;
+    color: #555; /* Puedes ajustar el color según tus preferencias */
+}
+
+.contenedor .contenedor-items .item .id-item {
+    display: none;
+    text-align: center;
+    font-size: 16px;
+    color: #888; /* Puedes ajustar el color según tus preferencias */
+}
+
+
 .contenedor .contenedor-items .item .titulo-item{
     display: block;
     font-weight: bold;
@@ -69,7 +85,7 @@ header h1{
     display: block;
     margin: 10px auto;
     border: none;
-    background-color: #6610f2;
+    background-color: black;
     color: #fff;
     padding: 5px 15px;
     border-radius: 5px;
@@ -91,7 +107,7 @@ header h1{
     opacity: 0;
 }
 .carrito .header-carrito{
-    background-color: #6610f2;
+    background-color: #000;
     color: #fff;
     text-align: center;
     padding: 30px 0;
@@ -133,7 +149,7 @@ header h1{
     line-height: 32px;
     text-align: center;
     border-radius: 50%;
-    border: 1px solid #6610f2;
+    border: 1px solid #000;
     cursor: pointer;
 }
 .carrito .carrito-item .carrito-item-precio{
@@ -146,14 +162,14 @@ header h1{
     position: absolute;
     right: 15px;
     top: 15px;
-    color: #6610f2;
+    color: #000;
     font-size: 20px;
     width: 40px;
     height: 40px;
     line-height: 40px;
     text-align: center;
     border-radius: 50%;
-    border: 1px solid #6610f2;
+    border: 1px solid #000;
     cursor: pointer;
     display: block;
     background: transparent;
@@ -179,7 +195,7 @@ header h1{
     display: block;
     width: 100%;
     border: none;
-    background: #6610f2;
+    background: #000;
     color: #fff;
     border-radius: 5px;
     font-size: 18px;
