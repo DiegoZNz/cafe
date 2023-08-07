@@ -1,7 +1,22 @@
 
 {% extends 'adm_navbar.html' %}
 {% block content %}
-
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div >
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: '{{ messages[0] }}',
+                    position: 'top-end', 
+                    showConfirmButton: false, 
+                    timer: 2500 
+                  });
+            </script>
+        </div>
+    {% endif %}
+    {% endwith %}
     <!-- HEADER SECTION -->
     <header id="header" class="header w-100">
         <div class="header__top w-100">

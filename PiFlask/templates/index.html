@@ -10,20 +10,26 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
   <script type="text/javascript" src="{{ url_for('static', filename='script/login.js') }}"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <!--SWEETALERT-->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <title>Login</title>
 </head>
 
 <body>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>{{ messages[0] }}</strong>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <div>
+        <script>
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops... Algo salió mal.',
+            text: '{{ messages[0] }}',
+          })
+        </script>
       </div>
     {% endif %}
   {% endwith %}
+
   <div class="cotn_principal">
     <div class="cont_centrar">
       <div class="cont_login">
