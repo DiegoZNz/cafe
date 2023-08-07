@@ -76,6 +76,7 @@ def index():
 
 
 @app.route('/login', methods=['POST'])
+@login_required
 def login():
     connection = connect_to_database()
   
@@ -120,6 +121,7 @@ def dashboard():
 
 
 @app.route('/guardar', methods=['POST'])
+@login_required
 def guardar():
     if request.method == 'POST':
         Vnombre = request.form['txtNombre_guardar']
@@ -159,6 +161,7 @@ def menu():
     return render_template('adm_products.html', listMenu=QueryMenu, listcategorias=QueryCategorias)
 
 @app.route('/save', methods=['POST'])
+@login_required
 def saveProd():
     connection = connect_to_database() 
     if request.method == 'POST':
@@ -177,6 +180,7 @@ def saveProd():
     return redirect(url_for('menu'))
 
 @app.route('/save_category', methods=['POST'])
+@login_required
 def saveCategory():
     connection = connect_to_database() 
     if request.method == 'POST':
@@ -201,6 +205,7 @@ def edit(id):
     return render_template('adm_editProducts.html',menu = Queryedit, listcategorias=QueryCategoriasedit)
 
 @app.route('/update/<id>', methods=['POST'])
+@login_required
 def update(id):
     connection = connect_to_database() 
     if request.method == 'POST':
@@ -250,6 +255,7 @@ def addAdm():
     return render_template('adm_addAdm.html')
 
 @app.route('/save-adm', methods=['POST'])
+@login_required
 def saveAdm():
     if request.method == 'POST':
         Vnombre = request.form['txtnombre']
