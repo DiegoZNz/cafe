@@ -5,9 +5,9 @@
     <div class="cotn_principal">
         <div class="cont_centrar">
             <div class="container">
-                <div class="row justify-content-center mt-5">
+                <div class="row">
                     <div class="col-12">
-                        <table class="table  table-hover">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th scope="col">Fecha Pedido</th>
@@ -15,34 +15,50 @@
                                     <th scope="col">Total Pedido</th>
                                     <th scope="col">Estatus Pedido</th>
                                     <th scope="col">Acciones</th>
-
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>2023-06-01</td>
-                                    <td>Juan Perez</td>
-                                    <td>$15.99</td>
-                                    <td>Pendiente</td>
-                                </tr>
-                                <tr>
-                                    <td>2023-06-02</td>
-                                    <td>Maria Lopez</td>
-                                    <td>$8.49</td>
-                                    <td>Entregado</td>
-                                </tr>
-                                <tr>
-                                    <td>2023-06-03</td>
-                                    <td>Carlos Sanchez</td>
-                                    <td>$12.99</td>
-                                    <td>En proceso</td>
-                                </tr>
-
-                
+                                {% for pedidos in listPedidos %}
+                                    <tr>
+                                        <td>{{ pedidos[1] }}</td>
+                                        <td>{{ pedidos[2] }}</td>
+                                        <td>{{ pedidos[3] }}</td>
+                                        <td>{{ pedidos[4] }}</td>
+                                        <td>
+                                            <a href="/edit/{{ pedidos[4] }}" class="btn btn-success">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="/edit2/{{ pedidos[4] }}" class="btn btn-danger">
+                                                <i class="far fa-trash-alt"></i>
+                                            </a>
+                                            <a href="javascript:void(0);" class="btn btn-info mostrar-detalles">
+                                                Mostrar detalles
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr class="detalles" style="display: none;">
+                                        <td colspan="5">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Producto</th>
+                                                        <th>Cantidad</th>
+                                                        <th>Precio</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Producto 1</td>
+                                                        <td>2</td>
+                                                        <td>$10.00</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
-
-
                     </div>
                 </div>
             </div>

@@ -251,11 +251,13 @@ def delete(id):
     return redirect(url_for('menu'))
 
 
-
 @app.route('/pedidos')
-@login_required
 def pedidos():
-    return render_template('pedidos.html')
+    connection = connect_to_database() 
+    cursor = connection.cursor()
+    cursor.execute("select p.id_pedido, p.fecha_pedido, u.nombre, p.precio_total, e.tipo from TbPedidos p inner join TbUsuarios u on p.id_usuario = u.id_usuario inner join TbEstatusPedido e on p.estatus = e.id_estatuspedido where e.id_estatuspedido = 1")
+    queryped = cursor.fetchall()
+    return render_template('pedidos.html', listPedidos=queryped)
 
 ########################################################### PRODUCTOS QUE VE EL USUARIO MENU #####################################################
 
