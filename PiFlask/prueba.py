@@ -1,5 +1,5 @@
 ###################################### IMPORTACIONES ####################################################
-from flask import Flask, render_template, request, redirect, url_for, session, after_this_request
+from flask import Flask, render_template, request, redirect, url_for, session, after_this_request, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
 import pyodbc
 from flask import flash
@@ -354,6 +354,51 @@ def userMenu():
 @login_required
 def userp():
     return render_template('usr_pedidos.html')
+
+
+@app.route('/guardar_precio_total', methods=['POST'])
+def guardar_precio_total():
+    try:
+        data = request.get_json()
+        precio_total = data['precioTotal']
+        connection = connect_to_database() 
+        CS = connection.cursor()
+
+        CS.execute('INSERT INTO TbPedidos (fecha_pedido, id_usuario, precio_total) VALUES (GETDATE(), ?, ?)', (2, precio_total))
+        connection.commit()
+        CS.execute('SELECT SCOPE_IDENTITY() AS UltimoPedidoID')
+        ultimo_pedido_id = CS.fetchone()['UltimoPedidoID']
+        app.last_pedido_id = ultimo_pedido_id
+
+        return jsonify({"message": "Precio total guardado en la base de datos"})
+
+    except Exception as e:
+        CS.rollback()
+        return jsonify({"error": "Error al guardar el precio total en la base de datos: " + str(e)})
+    
+@app.route('/guardar_detalles_pedido', methods=['POST'])
+def guardar_detalles_pedido():
+    detalles = request.json.get('detallesProductos')
+    print("Detalles a insertar:", detalles)  # Imprime la lista de detalles para verificar
+
+    connection = connect_to_database() 
+    CS = connection.cursor()
+    for detalle in detalles:
+        # Convertir los valores a números enteros o de punto flotante
+        id_producto = int(detalle['id'])
+        cantidad = int(detalle['cantidad'])
+        precio = float(detalle['precio'])
+
+        # Insertar detalles del pedido en la tabla de Detalles de Pedido
+        CS.execute("INSERT INTO TbDetallepedidos (id_pedido, id_producto, cantidad, precio_uni) VALUES (?, ?, ?, ?)",
+                    6, id_producto, cantidad, precio)
+
+        print("Detalle insertado:", {'id_producto': id_producto, 'cantidad': cantidad, 'precio': precio})
+        
+    CS.commit()
+    return jsonify({'message': 'Detalles de productos recibidos y guardados'})
+
+
 
 
 ############################################# PUERTO  ####################################################################
