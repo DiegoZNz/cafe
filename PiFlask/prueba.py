@@ -119,8 +119,8 @@ def dashboard():
 ##################################### FIN  DASHBOARD  #######################################################
 
 
+############################################# AGREGAR USUARIO ##################################################
 @app.route('/guardar', methods=['POST'])
-@login_required
 def guardar():
     if request.method == 'POST':
         Vnombre = request.form['txtNombre_guardar']
@@ -140,11 +140,19 @@ def guardar():
         flash('El usuario se ha agregado correctamente.')
     return redirect(url_for('index'))
 
+######################################### FIN AGREGAR USUARIO ##########################################################
+
+######################################### ENCRIPTAR PASSWORD DE  USUARIO ##########################################################
 
 def encriptarContrasena(password):
     sal = bcrypt.gensalt()
     conHa = bcrypt.hashpw(password.encode(), sal)
     return conHa
+
+######################################### FIN ENCRIPTAR PASSWORD DE  USUARIO ##########################################################
+
+
+########################################################### PRODUCTOS QUE VE EL USUARIO MENU #####################################################
 
 
 @app.route('/productos')
@@ -243,11 +251,13 @@ def delete(id):
     return redirect(url_for('menu'))
 
 
+
 @app.route('/pedidos')
 @login_required
 def pedidos():
     return render_template('pedidos.html')
 
+########################################################### PRODUCTOS QUE VE EL USUARIO MENU #####################################################
 
 ######################################### AGREGAR ADMINSTRADOR ####################################################################
 @app.route('/agregar-admin')
@@ -256,7 +266,7 @@ def addAdm():
 
     connection = connect_to_database() 
     cursor = connection.cursor()
-    cursor.execute("SELECT u.nombre, u.ap, u.am, u.matricula, u.correo, p.permiso, u.estatus FROM TbUsuarios u INNER JOIN TbRoles p ON p.id_tipo_permiso = u.id_tipo_permiso")
+    cursor.execute("SELECT u.nombre, u.ap, u.am, u.matricula, u.correo, p.permiso, u.estatus FROM TbUsuarios u INNER JOIN TbRoles p ON p.id_tipo_permiso = u.id_tipo_permiso  WHERE u.id_tipo_permiso = 1")
     QueryUsuario = cursor.fetchall()
     # Convertir el valor numérico del estatus a "Activo" si es igual a 1
     for usuario in QueryUsuario:
@@ -297,9 +307,20 @@ def saveAdm():
 @app.route('/usuarios-penalizados')
 @login_required
 def upena():
-    return render_template('adm_Upenalizados.html')
+    
+    connection = connect_to_database() 
+    cursor = connection.cursor()
+    cursor.execute("SELECT u.matricula, u.nombre, u.ap, u.am, p.fecha_penalizacion, u.estatus FROM TbPenalizaciones p INNER JOIN TbUsuarios u ON u.id_usuario=p.id_usuario WHERE u.id_tipo_permiso=2")
+    QueryPenalizacion = cursor.fetchall()
+    # Convertir el valor numérico del estatus a "Activo" si es igual a 1
+    for penalizacion in QueryPenalizacion:
+        if penalizacion[5] == 1:
+            penalizacion[5] = "Activo"
 
-############################################# USUARIOS PENALIZADOS ####################################################################
+            
+    return render_template('adm_Upenalizados.html', lisPenalizacion=QueryPenalizacion)
+
+############################################# FIN USUARIOS PENALIZADOS ####################################################################
 
 
 #################################### CERRAR SESION ########################################################

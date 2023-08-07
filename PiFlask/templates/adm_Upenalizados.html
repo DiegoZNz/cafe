@@ -1,49 +1,43 @@
+{% extends 'adm_navbar.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5 ">
+        <div class="col-12">
 
-    {% extends 'adm_navbar.html' %}
-    {% block content %}
-        <div class="container">
-            <div class="row justify-content-center mt-5 ">
-                <div class="col-12">
+            <table class="table  table-hover ">
+                <thead>
+                    <tr>
+                        <th scope="col">Matrícula</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellido Paterno</th>
+                        <th scope="col">Apellido Materno</th>
+                        <th scope="col">Fecha de penalizacion</th>
+                        <th scope="col">Estatus</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for penalizacion in listPenalizacion %}
+                    <tr>
+                        <td>{{ penalizacion[0] }}</td>
+                        <td>{{ penalizacion[1] }}</td>
+                        <td>{{ penalizacion[2] }}</td>
+                        <td>{{ penalizacion[3] }}</td>
+                        <td>{{ penalizacion[4] }}</td>
+                        <td>{{ penalizacion[5] }}</td>
+                        <td>{{ penalizacion[6] }}</td>
+                        <td>
+                            <a href="/edit/{{penalizacion[0]}}" class="btn btn-outline-primary">
+                                <i class="bi bi-pencil-fill"></i> Reactivar
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
 
-                    <table class="table  table-hover ">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Apellido Paterno</th>
-                                <th scope="col">Apellido Materno</th>
-                                <th scope="col">Matrícula</th>
-                                <th scope="col">Correo</th>
-                                <th scope="col">Fecha de penalización</th>
-                                <th scope="col">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Juan</td>
-                                <td>Pérez</td>
-                                <td>Gómez</td>
-                                <td>12345</td>
-                                <td>juan@example.com</td>
-                                <td>2023-06-15</td>
-                                <td>
-                                    <button class="btn  btn-outline-danger">Eliminar</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>María</td>
-                                <td>López</td>
-                                <td>Rodríguez</td>
-                                <td>67890</td>
-                                <td>maria@example.com</td>
-                                <td>2023-06-20</td>
-                                <td>
-                                    <button class="btn  btn-outline-danger">Eliminar</button>
-                                </td>
-                            </tr>
-                            <!-- Agrega más filas según sea necesario -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+            </table>
         </div>
-        {% endblock %}
+    </div>
+</div>
+{% endblock %}
