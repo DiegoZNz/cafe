@@ -1,39 +1,33 @@
 {% extends 'usr_navbar.html' %}
 {% block content %}
-    <div class="cotn_principal">
-        <div class="cont_centrar">
-            <div class="container">
-                <div class="row justify-content-center mt-5">
-                    <div class="col-10">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Fecha del pedido</th>
-                                    <th scope="col">Total</th>
-                                    <th scope="col">Estatus del pedido</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>2023-06-01</td>
-                                    <td>$15.99</td>
-                                    <td>Pendiente</td>
-                                </tr>
-                                <tr>
-                                    <td>2023-06-02</td>
-                                    <td>$8.49</td>
-                                    <td>Entregado</td>
-                                </tr>
-                                <tr>
-                                    <td>2023-06-03</td>
-                                    <td>$12.99</td>
-                                    <td>En proceso</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+
+<div class="cotn_principal">
+    <div class="cont_centrar">
+        <div class="container">
+            <div class="row justify-content-center mt-5">
+                <div class="col-12">
+                    <table class="table text-center table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Fecha Pedido</th>
+                                <th scope="col">Total Pedido</th>
+                                <th scope="col">Estatus Pedido</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pedido in listpedidos %}
+                            <tr>
+                                <td>{{ pedido[1] }}</td>
+                                <td>{{ pedido[2] }}</td>
+                                <td>{{ pedido[3] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 {% endblock %}

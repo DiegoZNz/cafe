@@ -416,7 +416,15 @@ def userMenu():
 @app.route('/usrpedidos')
 @login_required
 def userp():
-    return render_template('usr_pedidos.html')
+    usuario_id = ID
+    connection=connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("select p.id_pedido, fecha_pedido, precio_total, e.tipo from TbPedidos p inner join TbEstatusPedido e on p.estatus=e.id_estatuspedido where p.id_usuario = ?",(usuario_id))
+    querypedidos = cursor.fetchall()
+    
+    cursor.execute("select p.id_pedido, pr.nombre, dp.cantidad, pr.precio from TbDetallepedidos dp inner join TbPedidos p on dp.id_pedido = p.id_pedido inner join TbProductos pr on dp.id_producto = pr.id_prod")
+    querypedp = cursor.fetchall()
+    return render_template('usr_pedidos.html', listpedidos=querypedidos, listdp=querypedp)
 
 
 @app.route('/guardar_precio_total', methods=['POST'])
