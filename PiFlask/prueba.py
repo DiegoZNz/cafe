@@ -250,14 +250,55 @@ def delete(id):
     flash('El producto fue eliminado')
     return redirect(url_for('menu'))
 
+########################################### PEDIDOS ##############################################################################
 
 @app.route('/pedidos')
 def pedidos():
-    connection = connect_to_database() 
+    connection = connect_to_database()
     cursor = connection.cursor()
-    cursor.execute("select p.id_pedido, p.fecha_pedido, u.nombre, p.precio_total, e.tipo from TbPedidos p inner join TbUsuarios u on p.id_usuario = u.id_usuario inner join TbEstatusPedido e on p.estatus = e.id_estatuspedido where e.id_estatuspedido = 1")
+    cursorc = connection.cursor()
+
+    cursor.execute("SELECT p.id_pedido, CONCAT(u.nombre, ' ', u.ap, ' ', u.am), p.fecha_pedido, p.precio_total, ep.tipo FROM TbPedidos p INNER JOIN TbUsuarios u ON p.id_usuario = u.id_usuario INNER JOIN TbEstatusPedido ep ON p.estatus = ep.id_estatuspedido WHERE ep.id_estatuspedido = 1")
     queryped = cursor.fetchall()
-    return render_template('pedidos.html', listPedidos=queryped)
+
+    cursorc.execute("SELECT p.id_pedido, CONCAT(u.nombre, ' ', u.ap, ' ', u.am), p.fecha_pedido, p.precio_total, ep.tipo, u.id_usuario FROM TbPedidos p INNER JOIN TbUsuarios u ON p.id_usuario = u.id_usuario INNER JOIN TbEstatusPedido ep ON p.estatus = ep.id_estatuspedido WHERE ep.id_estatuspedido = 2")
+    querypedc = cursorc.fetchall()
+
+    cursor.close()
+    cursorc.close()
+    return render_template('pedidos.html', listPedidos=queryped,listPedidosc=querypedc)
+
+@app.route('/cambio-estatus/<id>') #CAMBIA EL ESTATUS DE PENDIENTE A EN PROCESO
+def cambio_estatus(id):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("EXEC sp_cambioEstatusEP @pedido_id=?", (id,))
+    connection.commit()
+    cursor.close()
+    return redirect('/pedidos')
+
+
+@app.route('/cambio-estatusC/<id>') #CAMBIA EL ESTATUS DE EN PROCESO A COMPLETADO
+def cambio_estatusC(id):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("EXEC sp_cambioEstatusC ?", (id,))
+    connection.commit()
+    cursor.close()
+
+    return redirect('/pedidos')
+
+@app.route('/penalizarusu/<id>') #AGREGAR PENALIZACION y cambiar el estatus del pedido a cancelado
+def penalizarusu(id):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("EXEC sp_agregarPenalizacion ?", (id,))
+    connection.commit()
+    cursor.close()
+
+    return redirect('/pedidos')
+   
+########################################### FIN DE PEDIDOS ##############################################################################
 
 ########################################################### PRODUCTOS QUE VE EL USUARIO MENU #####################################################
 
@@ -312,15 +353,26 @@ def upena():
     
     connection = connect_to_database() 
     cursor = connection.cursor()
-    cursor.execute("SELECT u.matricula, u.nombre, u.ap, u.am, p.fecha_penalizacion, u.estatus FROM TbPenalizaciones p INNER JOIN TbUsuarios u ON u.id_usuario=p.id_usuario WHERE u.id_tipo_permiso=2")
+    cursor.execute("SELECT u.matricula, CONCAT(u.nombre,' ',u.am,' ', u.ap), p.fecha_penalizacion, u.estatus, u.id_usuario FROM TbPenalizaciones p INNER JOIN TbUsuarios u ON u.id_usuario=p.id_usuario WHERE u.id_tipo_permiso=2 AND u.estatus=0")
     QueryPenalizacion = cursor.fetchall()
-    # Convertir el valor numérico del estatus a "Activo" si es igual a 1
+      # Reemplazar valores de estatus numéricos por "Activo" o "Desactivado"
     for penalizacion in QueryPenalizacion:
-        if penalizacion[5] == 1:
-            penalizacion[5] = "Activo"
+        if penalizacion[3] == 1:
+            penalizacion[3] = "Activo"
+        elif penalizacion[3] == 0:
+            penalizacion[3] = "Desactivado"            
+    return render_template('adm_Upenalizados.html', listPenalizacion=QueryPenalizacion)
 
-            
-    return render_template('adm_Upenalizados.html', lisPenalizacion=QueryPenalizacion)
+@app.route('/reactivar/<id>') #REACTIVAR USUARIO
+def reactivar(id):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("EXEC sp_cambiarEstatusUsuario ?", (id,))
+    connection.commit()
+    cursor.close()
+
+    return redirect('/usuarios-penalizados')
+   
 
 ############################################# FIN USUARIOS PENALIZADOS ####################################################################
 

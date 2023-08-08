@@ -9,8 +9,6 @@
                     <tr>
                         <th scope="col">Matrícula</th>
                         <th scope="col">Nombre</th>
-                        <th scope="col">Apellido Paterno</th>
-                        <th scope="col">Apellido Materno</th>
                         <th scope="col">Fecha de penalizacion</th>
                         <th scope="col">Estatus</th>
                         <th scope="col">Acciones</th>
@@ -23,11 +21,10 @@
                         <td>{{ penalizacion[1] }}</td>
                         <td>{{ penalizacion[2] }}</td>
                         <td>{{ penalizacion[3] }}</td>
-                        <td>{{ penalizacion[4] }}</td>
-                        <td>{{ penalizacion[5] }}</td>
-                        <td>{{ penalizacion[6] }}</td>
+
+
                         <td>
-                            <a href="/edit/{{penalizacion[0]}}" class="btn btn-outline-primary">
+                            <a href="/reactivar/{{penalizacion[4]}}" class="btn btn-outline-primary">
                                 <i class="bi bi-pencil-fill"></i> Reactivar
                             </a>
                         </td>
