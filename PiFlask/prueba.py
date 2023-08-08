@@ -100,7 +100,7 @@ def login():
             if PERMISO == 1:
                 return render_template('adm_dashboard.html')
             else:
-                return render_template('usr_menu.html')
+                return render_template('usr_dashboard.html')
         else:
             flash('Usuario o Contraseña Incorrectas')
             return render_template('error.html')
