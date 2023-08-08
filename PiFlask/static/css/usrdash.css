@@ -1,0 +1,56 @@
+div.circule {
+    position: relative;
+    background: radial-gradient(#ff7300, transparent);
+    width: 30vw;
+    height: 30vw;
+    border-radius: 50%;
+}
+
+div.circule2 {
+    position: relative;
+    background: radial-gradient(#ffa255, transparent);
+    width: 26vw;
+    height: 26vw;
+    border-radius: 50%;
+}
+
+div.circule3 {
+    position: relative;
+    background: radial-gradient(#FD9843, transparent);
+    width: 23vw;
+    height: 23vw;
+    border-radius: 50%;
+}
+
+.image-1 {
+    width: 100%;
+    height: 41vw;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-attachment: scroll;
+    background-image: url("https://res.cloudinary.com/osdev/image/upload/v1581541390/xand/indian_e748ja.jpg")
+}
+
+
+.intro {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+}
+
+
+div.about {
+    width: 100%;
+    margin: auto;
+    background-color: rgba(251, 237, 244, 0.6);
+    text-align: center;
+    text-color: #fdfcfc;
+    padding-top: 20px;
+}
+
+div.about p {
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: left;
+}
