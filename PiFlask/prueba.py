@@ -11,8 +11,8 @@ import bcrypt
 ######################################## CONECCION CON SQL ################################################################
 app = Flask(__name__, static_folder='static')
 app.secret_key = "mi_clave_secreta"
-connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\BERENICEBARCENAS;DATABASE=cafeteria;UID=twa;PWD=1904"
-#connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ACERDZ\DIEGO;DATABASE=cafeteria;UID=admDiego;PWD=12345"
+#connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=MSI\BERENICEBARCENAS;DATABASE=cafeteria;UID=twa;PWD=1904"
+connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ACERDZ\DIEGO;DATABASE=cafeteria;UID=admDiego;PWD=12345"
 
 def connect_to_database():
     try:
@@ -59,6 +59,7 @@ def load_user(user_id):
 
 PERMISO=0
 ID=0
+PEDIDO=0
 
 
 
@@ -256,17 +257,19 @@ def delete(id):
 def pedidos():
     connection = connect_to_database()
     cursor = connection.cursor()
-    cursorc = connection.cursor()
 
     cursor.execute("SELECT p.id_pedido, CONCAT(u.nombre, ' ', u.ap, ' ', u.am), p.fecha_pedido, p.precio_total, ep.tipo FROM TbPedidos p INNER JOIN TbUsuarios u ON p.id_usuario = u.id_usuario INNER JOIN TbEstatusPedido ep ON p.estatus = ep.id_estatuspedido WHERE ep.id_estatuspedido = 1")
     queryped = cursor.fetchall()
+    
+    cursor.execute("SELECT p.id_pedido, CONCAT(u.nombre, ' ', u.ap, ' ', u.am), p.fecha_pedido, p.precio_total, ep.tipo, u.id_usuario FROM TbPedidos p INNER JOIN TbUsuarios u ON p.id_usuario = u.id_usuario INNER JOIN TbEstatusPedido ep ON p.estatus = ep.id_estatuspedido WHERE ep.id_estatuspedido = 2")
+    querypedc = cursor.fetchall()
 
-    cursorc.execute("SELECT p.id_pedido, CONCAT(u.nombre, ' ', u.ap, ' ', u.am), p.fecha_pedido, p.precio_total, ep.tipo, u.id_usuario FROM TbPedidos p INNER JOIN TbUsuarios u ON p.id_usuario = u.id_usuario INNER JOIN TbEstatusPedido ep ON p.estatus = ep.id_estatuspedido WHERE ep.id_estatuspedido = 2")
-    querypedc = cursorc.fetchall()
-
+    cursor.execute("select p.id_pedido, pr.nombre, dp.cantidad, pr.precio from TbDetallepedidos dp inner join TbPedidos p on dp.id_pedido = p.id_pedido inner join TbProductos pr on dp.id_producto = pr.id_prod")
+    querypedp = cursor.fetchall()
+    print (queryped)
+    
     cursor.close()
-    cursorc.close()
-    return render_template('pedidos.html', listPedidos=queryped,listPedidosc=querypedc)
+    return render_template('pedidos.html', listPedidos=queryped,listPedidosc=querypedc, listdp=querypedp)
 
 @app.route('/cambio-estatus/<id>') #CAMBIA EL ESTATUS DE PENDIENTE A EN PROCESO
 def cambio_estatus(id):
@@ -412,22 +415,16 @@ def userp():
 
 @app.route('/guardar_precio_total', methods=['POST'])
 def guardar_precio_total():
+    
     try:
         data = request.get_json()
         precio_total = data['precioTotal']
         connection = connect_to_database() 
         CS = connection.cursor()
-
         # Utiliza el valor de la variable global ID para obtener el usuario_id del usuario con sesión activa
         usuario_id = ID
-        print("ID del usuario con sesión activa:", ID)
-
         CS.execute('INSERT INTO TbPedidos (fecha_pedido, id_usuario, precio_total) VALUES (GETDATE(), ?, ?)', (usuario_id, precio_total))
         connection.commit()
-        CS.execute('SELECT SCOPE_IDENTITY() AS UltimoPedidoID')
-        ultimo_pedido_id = CS.fetchone()['UltimoPedidoID']
-        app.last_pedido_id = ultimo_pedido_id
-
         return jsonify({"message": "Precio total guardado en la base de datos"})
 
     except Exception as e:
@@ -440,22 +437,28 @@ def guardar_precio_total():
     
 @app.route('/guardar_detalles_pedido', methods=['POST'])
 def guardar_detalles_pedido():
-    detalles = request.json.get('detallesProductos')
-    print("Detalles a insertar:", detalles)  # Imprime la lista de detalles para verificar
-
+    global PEDIDO
     connection = connect_to_database() 
     CS = connection.cursor()
+    CS.execute('SELECT COUNT(*) FROM TbPedidos')
+    dbpedido=CS.fetchone()
+    
+    PEDIDO = dbpedido[0]
+    print("Pedido actual",PEDIDO)
+    print ("/---------------------/",PEDIDO)
+    idpedido = PEDIDO
+    detalles = request.json.get('detallesProductos')
+    print("Detalles a insertar:", detalles)  # Imprime la lista de detalles para verificar
+    
     for detalle in detalles:
         # Convertir los valores a números enteros o de punto flotante
+        
         id_producto = int(detalle['id'])
         cantidad = int(detalle['cantidad'])
         precio = float(detalle['precio'])
-
+        print (idpedido,id_producto,cantidad,precio)
         # Insertar detalles del pedido en la tabla de Detalles de Pedido
-        CS.execute("INSERT INTO TbDetallepedidos (id_pedido, id_producto, cantidad, precio_uni) VALUES (?, ?, ?, ?)",
-                    1, id_producto, cantidad, precio)
-
-        print("Detalle insertado:", {'id_producto': id_producto, 'cantidad': cantidad, 'precio': precio})
+        CS.execute("INSERT INTO TbDetallepedidos (id_pedido, id_producto, cantidad, precio_uni) VALUES (?, ?, ?, ?)", idpedido, id_producto, cantidad, precio)
         
     CS.commit()
     return jsonify({'message': 'Detalles de productos recibidos y guardados'})

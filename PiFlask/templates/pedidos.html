@@ -6,7 +6,7 @@
         <div class="container">
             <div class="row justify-content-center mt-5">
                 <div class="col-12">
-                    <table class=" table text-center table-hover">
+                    <table class="table text-center table-hover">
                         <thead>
                             <tr>
                                 <th scope="col">Num. Pedido</th>
@@ -30,7 +30,7 @@
                                         <a href="/cambio-estatus/{{ pedido[0] }}" class="btn btn-outline-primary mb-2 mt-2">
                                             <i class="bi bi-check"></i>
                                         </a>
-                                        <a href="javascript:void(0);" class="btn btn-outline-success mostrar-detalles">
+                                        <a href="javascript:void(0);" class="btn btn-info" data-toggle="modal" data-target="#modalDetalle{{ pedido[0] }}">
                                             <i class="bi bi-plus"></i>
                                         </a>
                                     </div>
@@ -41,6 +41,50 @@
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+{% for pedido in listPedidos %}
+<div class="modal fade" id="modalDetalle{{ pedido[0] }}" tabindex="-1" role="dialog" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDetalleLabel">Detalles del Pedido - Num. {{ pedido[0] }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in listdp %}
+                        {% if detalle[0] == pedido[0] %} 
+                            <tr>
+                                <td>{{ detalle[1] }}</td>
+                                <td>{{ detalle[2] }}</td>
+                                <td>{{ detalle[3] }}</td>
+                            </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
             <div class="row justify-content-center mt-5">
                 <div class="col-12">
@@ -85,4 +129,14 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".mostrar-detalles").click(function() {
+                $(this).closest("tr").next(".detalles").toggle();
+            });
+        });
+    </script>
 {% endblock %}
