@@ -117,6 +117,12 @@ def login():
 def dashboard():
     return render_template('adm_dashboard.html')
 
+
+@app.route('/usudashboard')
+@login_required
+def usudashboard():
+    return render_template('usr_dashboard.html')
+
 ##################################### FIN  DASHBOARD  #######################################################
 
 
